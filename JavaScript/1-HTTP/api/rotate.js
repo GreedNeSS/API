@@ -17,4 +17,5 @@ module.exports = async (name, angle) => {
 		const point = shape[key];
 		rotate(point, angle);
 	}
+	return 'Shape rotate';
 };

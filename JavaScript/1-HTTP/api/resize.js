@@ -17,4 +17,5 @@ module.exports = async (name, k) => {
 		const point = shape[key];
 		resize(point, k);
 	}
+	return 'Shape resize';
 };
