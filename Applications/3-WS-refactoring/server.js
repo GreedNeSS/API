@@ -61,6 +61,9 @@ const server = http.createServer(async (req, res) => {
 
 const ws = new WebSocket.Server({ server });
 
+const makeResponse = (method, error, data = undefined) =>
+	JSON.stringify({ method, error, data });
+
 ws.on('connection', (connection, req) => {
 	console.log('Connected' + req.socket.remoteAddress);
 	connection.on('message', async message => {
@@ -71,12 +74,12 @@ ws.on('connection', (connection, req) => {
 		try {
 			const result = await fn(...args);
 			if (!result) {
-				connection.send('"No result"');
+				connection.send(makeResponse(method, 'No result'));
 				return;
 			}
-			connection.send(JSON.stringify(result));
+			connection.send(makeResponse(method, null, result));
 		} catch (error) {
-			connection.send('"Server error');
+			connection.send(makeResponse(method, 'Server error'));
 		}
 	});
 });

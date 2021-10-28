@@ -2,35 +2,40 @@
 
 const socket = new WebSocket('ws://127.0.0.1:8000/');
 
+socket.onmessage = event => {
+	const res = JSON.parse(event.data);
+	const { method, error, data } = res;
+	if (error) {
+		console.log(`Error: ${error}, method: ${method}`);
+		return;
+	}
+	if (method === 'render') {
+		const output = document.getElementById('output');
+		output.innerHTML = data;
+		return;
+	}
+	console.log(`Method: ${method}, data: ${data}`);
+};
+
 const buildAPI = methods => {
 	const api = {};
 	for (const method of methods) {
-		api[method] = (...args) => new Promise(resolve => {
+		api[method] = async (...args) => {
 			socket.send(JSON.stringify({ method, args }));
-			socket.onmessage = event => {
-				const data = JSON.parse(event.data);
-				resolve(data);
-			};
-		});
+		};
 	}
+	console.log({ api });
 	return api;
 };
 
 const api = buildAPI(['rect', 'move', 'rotate', 'read', 'render', 'resize']);
 
-const show = async () => {
-	const svg = await api.render('Rect1');
-	const output = document.getElementById('output');
-	output.innerHTML = svg;
-};
-
 const scenario = async () => {
 	await api.rect('Rect1', -10, 10, 10, -10);
 	await api.move('Rect1', 5, 5);
 	await api.rotate('Rect1', 5);
-	const data = await api.read('Rect1');
-	console.log({ data });
-	await show();
+	await api.read('Rect1');
+	await api.render('Rect1');
 };
 
 socket.onopen = () => {

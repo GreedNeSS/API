@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/GreedNeSS/API/issues"
   },
-  "homepage": "https://github.com/GreedNeSS/API#readme"
+  "homepage": "https://github.com/GreedNeSS/API#readme",
+  "dependencies": {
+    "ws": "^8.2.3"
+  }
 }
